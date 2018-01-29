@@ -12,17 +12,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeNameOfBluetooth extends MyBluetoothManager {
-
     private  boolean workFlagMyThread;
-
-
-    private static Thread mThread;
+    private static Thread myThread;
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -35,17 +33,17 @@ public class ChangeNameOfBluetooth extends MyBluetoothManager {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        workFlagMyThread=true;
         final String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         foregroundNotification();
         receiveSystemBroad();
         openDiscoverable();
-        mThread=new Thread(new Runnable() {
+        final List<byte[]> listBytesMessage = Split(message, 248);
+        workFlagMyThread=true;
+        myThread=new Thread(new Runnable() {
             @Override
             public void run() {
-                final List<byte[]> listBytesMessage = Split(message, 248);
                 while (workFlagMyThread) {
-                    try {
+                   try {
                         startMyRadio(listBytesMessage);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -53,6 +51,7 @@ public class ChangeNameOfBluetooth extends MyBluetoothManager {
                 }
             }
         });
+        myThread.start();
         return START_REDELIVER_INTENT;
     }
     @Override
@@ -70,7 +69,8 @@ public class ChangeNameOfBluetooth extends MyBluetoothManager {
         for (int i = 0; (workFlagMyThread)&&(i < listBytesMessage.size()); i++) {
             String name = new String(listBytesMessage.get(i));
                     adapter.setName(name);
-                    Thread.sleep(100);
+            Log.i("startMyRadio", "startMyRadio"+System.currentTimeMillis());
+                    myThread.sleep(1000);
         }
     }
 
