@@ -42,7 +42,7 @@ import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
-    final int serviceMaxRuntime=300000;
+    public static final int serviceMaxRuntime=300000;
     static final int BLUETOOTH_DISCOVERABLE_DURATION = 300;
     //Color of button
     static final int colorUnable= 0xFF666666;
@@ -149,9 +149,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    //TODO:Try BLE
     public void runSearchMessage() {
         if (MyBluetoothMethodManager.isBluetoothEnabled()&&checkPermission()) {
-            Intent intent = new Intent(this, ReceiveRadio.class);
+            Intent intent = new Intent(this, ReceiveRadio_BLE.class);
             startService(intent);
             myButtonState = ButtonState.SEARCH;
             setButtonState(myButtonState);
@@ -234,8 +235,9 @@ public class MainActivity extends AppCompatActivity {
             myButtonState=ButtonState.CANCEL;
             setButtonState(myButtonState);
         }
+        //TODO:Try BLE
         else if(myButtonState==ButtonState.SEARCH){
-            Intent stopIntent= new Intent(this,ReceiveRadio.class);
+            Intent stopIntent= new Intent(this,ReceiveRadio_BLE.class);
             stopService(stopIntent);
             myButtonState=ButtonState.CANCEL;
             setButtonState(myButtonState);
@@ -327,8 +329,9 @@ public class MainActivity extends AppCompatActivity {
             if( LocalAction_RefreshUI.equals(intent.getAction())){
                 Bundle bundle=intent.getExtras();
                 if(bundle!=null) {
-                    String address = bundle.getString(ReceiveRadio.EXTRA_CONTENT_MESSAGE_ADDRESS);
-                    String text = bundle.getString(ReceiveRadio.EXTRA_CONTENT_MESSAGE_TEXT);
+                    //TODO:Try BLE
+                    String address = bundle.getString(ReceiveRadio_BLE.EXTRA_CONTENT_MESSAGE_ADDRESS);
+                    String text = bundle.getString(ReceiveRadio_BLE.EXTRA_CONTENT_MESSAGE_TEXT);
                     Log.i("onReceive" , "onReceive: "+text);
                     myListViewManager.put(address,text);
                 }
